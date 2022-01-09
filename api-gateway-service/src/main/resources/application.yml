@@ -1,0 +1,53 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8180/auth/realms/microservices-realm
+        registration:
+          spring-cloud-gateway-client:
+            client-id: spring-cloud-gateway-client
+            client-secret: WzPKYpCeMwnGeAaOeBCJxPUdZdPSihDy
+            provider: keycloak
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/spring-cloud-gateway-client
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/auth/realms/microservices-realm/protocol/openid-connect/certs 
+  application:
+    name: api-gateway
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      default-filters:
+      - TokenRelay
+      routes:
+      - id: product-service
+        uri: lb://product-service
+        predicates:
+        - Path=/api/product 
+      - id: order-service
+        uri: lb://order-service
+        predicates:
+        - Path=/api/order
+    
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.uuid}
+

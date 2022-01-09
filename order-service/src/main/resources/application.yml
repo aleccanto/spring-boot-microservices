@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: order-service
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/auth/realms/microservices-realm
+  sql:
+    init:
+      mode: always
+
+  jmx:
+    enabled: false
+
+  jpa:
+    show-sql: true
+
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/micro_services
+    username: root
+    password: mypass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+    stream:
+      bindings:
+        notificationEventSupplier-out-0:
+          destination:
+            notification-events
+
+      source: 
+        notificationEventSupplier
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  sleuth:
+    circuitbreaker:
+      enabled: false
+    integration:
+      enabled: true
+    sampler:
+      probability: 1
+
+  zipkin:
+    base-url: http://localhost:9411/
+
+server:
+  port: 0
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.uuid}
